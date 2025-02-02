@@ -3,14 +3,19 @@ import { useState } from 'react'
                                                                                                                                                            
  const ProblemInterface = ({ problem, onCodeSubmit }) => {                                                                                                 
    const [code, setCode] = useState(problem.boilerplate)                                                                                                   
-   const [testResults, setTestResults] = useState([])                                                                                                      
+   const [testResults, setTestResults] = useState([])
+   const [isSubmitting, setIsSubmitting] = useState(false)
                                                                                                                                                            
    const handleSubmit = async () => {                                                                                                                      
+     setIsSubmitting(true)
+     setTestResults([])
      try {                                                                                                                                                 
        const results = await onCodeSubmit(code)                                                                                                            
        setTestResults(results)                                                                                                                             
      } catch (error) {                                                                                                                                     
        setTestResults([{ status: 'error', message: error.message }])                                                                                       
+     } finally {
+       setIsSubmitting(false)
      }                                                                                                                                                     
    }                                                                                                                                                       
                                                                                                                                                            
@@ -29,8 +34,12 @@ import { useState } from 'react'
            onChange={value => setCode(value)}                                                                                                              
            options={{ minimap: { enabled: false } }}                                                                                                       
          />                                                                                                                                                
-         <button className="submit-button" onClick={handleSubmit}>                                                                                         
-           Submit Solution                                                                                                                                 
+         <button 
+           className="submit-button" 
+           onClick={handleSubmit}
+           disabled={isSubmitting}
+         >                                                                                         
+           {isSubmitting ? 'Running Tests...' : 'Submit Solution'}                                                                                                
          </button>                                                                                                                                         
        </div>                                                                                                                                              
                                                                                                                                                            
