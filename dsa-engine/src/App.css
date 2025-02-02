@@ -2,6 +2,7 @@
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
+  text-align: center;
 }
 
 .controls {
@@ -9,6 +10,7 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: center;
 }
 
 input {
@@ -33,11 +35,14 @@ button:hover {
 
 .error {
   color: #ff4444;
-  margin-top: 5px;
+  margin-left: 10px;
 }
 
 .visualization-container {
   margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .tree-level {
