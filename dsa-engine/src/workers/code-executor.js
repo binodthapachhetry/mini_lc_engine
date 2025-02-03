@@ -30,9 +30,12 @@ self.onmessage = async function(e) {
       // Run user code
       await pyodide.runPythonAsync(code);
 
-      // Execute solution with input
+      // Add problem type handling
       const result = await pyodide.runPythonAsync(`
-        solution(input_data)
+        if '${problemType}' == 'twoSum':
+          result = solution(*input_data)  # Unpack arguments
+        else:
+          result = solution(input_data)   # Single argument
       `);
 
       return result.toJs();

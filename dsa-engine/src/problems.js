@@ -2,6 +2,7 @@ const problems = [
   {
     title: "Two Sum",
     difficulty: "Easy",
+    type: "twoSum",
     description: `
       <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, 
       return indices of the two numbers such that they add up to <code>target</code>.</p>

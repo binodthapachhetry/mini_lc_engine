@@ -91,7 +91,7 @@ ${code
            worker.postMessage({
              code,
              input: testCase.input,
-             problemType: problems[currentProblem].type
+             problemType: problems[currentProblem].type // Pass the problem type
            });
          });
 
