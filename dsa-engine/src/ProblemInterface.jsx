@@ -1,23 +1,23 @@
 import { useState } from 'react'                                                                                                                          
  import Editor from '@monaco-editor/react'                                                                                                                 
                                                                                                                                                            
- const ProblemInterface = ({ problem, onCodeSubmit }) => {                                                                                                 
-   const [code, setCode] = useState(problem.boilerplate)                                                                                                   
-   const [testResults, setTestResults] = useState([])
-   const [isSubmitting, setIsSubmitting] = useState(false)
-                                                                                                                                                           
-   const handleSubmit = async () => {                                                                                                                      
-     setIsSubmitting(true)
-     setTestResults([])
-     try {                                                                                                                                                 
-       const results = await onCodeSubmit(code)                                                                                                            
-       setTestResults(results)                                                                                                                             
-     } catch (error) {                                                                                                                                     
-       setTestResults([{ status: 'error', message: error.message }])                                                                                       
-     } finally {
-       setIsSubmitting(false)
-     }                                                                                                                                                     
-   }                                                                                                                                                       
+ const ProblemInterface = ({ problem, onCodeSubmit }) => {                                                                                                
+  const [code, setCode] = useState(problem.boilerplate)                                                                                                  
+  const [testResults, setTestResults] = useState([])                                                                                                     
+  const [isSubmitting, setIsSubmitting] = useState(false)                                                                                                
+                                                                                                                                                         
+  const handleSubmit = async () => {                                                                                                                     
+    setIsSubmitting(true)                                                                                                                                
+    setTestResults([])                                                                                                                                   
+    try {                                                                                                                                                
+      const results = await onCodeSubmit(code)                                                                                                           
+      setTestResults(results)                                                                                                                            
+    } catch (error) {                                                                                                                                    
+      setTestResults([{ status: 'error', message: error.message }])                                                                                      
+    } finally {                                                                                                                                          
+      setIsSubmitting(false)                                                                                                                             
+    }                                                                                                                                                    
+  }                                                                                                                                                     
                                                                                                                                                            
    return (                                                                                                                                                
      <div className="problem-interface">                                                                                                                   
