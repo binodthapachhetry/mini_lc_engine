@@ -15,30 +15,6 @@ import { useState } from 'react'
        // Create Web Worker
        const worker = new Worker(new URL('./workers/code-executor.js', import.meta.url))
 
-       // Convert array input to TreeNode structure for BST problems
-       const createTreeNode = (arr) => {
-         if (arr.length === 0) return null
-         const root = new TreeNode(arr[0])
-         const queue = [root]
-         let i = 1
-         
-         while (queue.length > 0 && i < arr.length) {
-           const node = queue.shift()
-           
-           if (arr[i] !== null) {
-             node.left = new TreeNode(arr[i])
-             queue.push(node.left)
-           }
-           i++
-           
-           if (i < arr.length && arr[i] !== null) {
-             node.right = new TreeNode(arr[i])
-             queue.push(node.right)
-           }
-           i++
-         }
-         return root
-       }
 
        // Python to JS conversion utilities
        const pythonToJS = {
@@ -51,20 +27,9 @@ function solution(input) {
     .replace(/#.*/g, '')}
 }`,
 
-         validateBST: (code) => `
-class TreeNode {
-  constructor(val = 0, left = null, right = null) {
-    this.val = val
-    this.left = left
-    this.right = right
-  }
-}
-
+         validPalindrome: (code) => `
 ${code
-  .replace(/class TreeNode:/g, '')
-  .replace(/def __init__\(self, val=0, left=None, right=None\):/g, '')
-  .replace(/        self\./g, '  this.')
-  .replace(/def solution\(root\):/, 'function solution(root) {')
+  .replace(/def solution\(s\):/, 'function solution(s) {')
   .replace(/    /g, '  ')
   .replace(/#.*/g, '')}
 }`

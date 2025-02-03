@@ -18,40 +18,23 @@ const problems = [
     ]
   },
   {
-    title: "Validate Binary Search Tree",
-    difficulty: "Medium",
+    title: "Valid Palindrome",
+    difficulty: "Easy",
+    type: "validPalindrome",
     description: `
-      <p>Given a binary tree, determine if it is a valid binary search tree (BST).</p>
-      <p>A valid BST is defined as follows:</p>
-      <ul>
-        <li>The left subtree of a node contains only nodes with keys less than the node's key.</li>
-        <li>The right subtree of a node contains only nodes with keys greater than the node's key.</li>
-        <li>Both the left and right subtrees must also be binary search trees.</li>
-      </ul>
+      <p>A phrase is a <strong>palindrome</strong> if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.</p>
       <p><strong>Example 1:</strong></p>
-      <pre>Input: [5,1,4,null,null,3,6]\nOutput: false\nExplanation: The root node's value is 5 but its right child's value is 4.</pre>
+      <pre>Input: "A man, a plan, a canal: Panama"\nOutput: true</pre>
+      <p><strong>Example 2:</strong></p>
+      <pre>Input: "race a car"\nOutput: false</pre>
     `,
-    boilerplate: `class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-def solution(root):
+    boilerplate: `def solution(s):
     # Your code here`,
     testCases: [
-      { 
-        input: [5,1,4,null,null,3,6],
-        expected: false
-      },
-      {
-        input: [2,1,3],
-        expected: true
-      },
-      {
-        input: [5,4,6,null,null,3,7],
-        expected: false
-      }
+      { input: "A man, a plan, a canal: Panama", expected: true },
+      { input: "race a car", expected: false },
+      { input: " ", expected: true },
+      { input: "0P", expected: false }
     ]
   }
 ]
