@@ -9,7 +9,7 @@ async function initializePyodide() {
 }
 
 self.onmessage = async (e) => {
-  const { code, input, problemType } = e.data;
+  const { code, input, inputType } = e.data;
   
   if (!pyodide) await initializePyodide();
   
@@ -22,13 +22,14 @@ ${code}
 import json
 input_data = json.loads('${JSON.stringify(input)}')
 
-try:
-    if ${problemType === 'twoSum'}:
-        result = solution(*input_data)
-    else:
-        result = solution(input_data)
-except Exception as e:
-    result = {'py_error': str(e), 'type': type(e).__name__}
+try:                                                                                                                                                      
+     # Dynamic argument handling                                                                                                                           
+     if isinstance(input_data, list) and ${inputType === 'spread'}:                                                                                        
+         result = solution(*input_data)                                                                                                                    
+     else:                                                                                                                                                 
+         result = solution(input_data)                                                                                                                     
+ except Exception as e:                                                                                                                                    
+     result = {'py_error': str(e), 'type': type(e).__name__}
 `;
 
     await pyodide.runPythonAsync(fullScript);

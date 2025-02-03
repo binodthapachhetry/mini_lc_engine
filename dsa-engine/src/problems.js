@@ -3,6 +3,8 @@ const problems = [
     title: "Two Sum",
     difficulty: "Easy",
     type: "twoSum",
+    inputType: "spread",
+    argsCount: 2,
     description: `
       <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, 
       return indices of the two numbers such that they add up to <code>target</code>.</p>
@@ -21,6 +23,8 @@ const problems = [
     title: "Valid Palindrome",
     difficulty: "Easy",
     type: "validPalindrome",
+    inputType: "single",
+    argsCount: 1,
     description: `
       <p>A phrase is a <strong>palindrome</strong> if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.</p>
       <p><strong>Example 1:</strong></p>
