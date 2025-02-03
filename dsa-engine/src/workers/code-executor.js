@@ -14,37 +14,44 @@ self.onmessage = async (e) => {
   if (!pyodide) await initializePyodide();
   
   try {
-    // Clear previous state
     pyodide.runPython('globals().clear()');
     
-    // Define solution function and execute in one context
     const fullScript = `
 ${code}
 
 import json
-from js import resolve
 input_data = json.loads('${JSON.stringify(input)}')
 
 try:
-    result = solution(*input_data) if ${problemType === 'twoSum'} else solution(input_data)
-    resolve(result)
+    if ${problemType === 'twoSum'}:
+        result = solution(*input_data)
+    else:
+        result = solution(input_data)
 except Exception as e:
-    resolve({'error': str(e), 'type': type(e).__name__})
+    result = {'py_error': str(e), 'type': type(e).__name__}
 `;
 
-    const result = await pyodide.runPythonAsync(fullScript);
+    await pyodide.runPythonAsync(fullScript);
+    const result = pyodide.globals.get('result');
+
+    // Handle Python errors
+    if (typeof result === 'object' && 'py_error' in result) {
+      throw new Error(`Python ${result.type}: ${result.py_error}`);
+    }
+
+    // Convert Python types to JS
+    let jsResult = result?.toJs?.() ?? result;
     
-    // Handle Python boolean conversion
-    let jsResult = result?.toJs ? result.toJs() : result;
-    
-    // Convert Python None to JS null
-    if (jsResult === undefined) jsResult = null;
+    // Handle boolean conversion
+    if (typeof jsResult === 'boolean') {
+      jsResult = Boolean(jsResult);
+    }
     
     self.postMessage({ status: 'success', result: jsResult });
   } catch (error) {
     self.postMessage({ 
-      status: 'error', 
-      error: error.message.replace(/PythonError: Traceback \(most recent call last\):[\s\S]*?Error: /, '') 
+      status: 'error',
+      error: error.message.replace(/PythonError: Traceback \(most recent call last\):[\s\S]*?Error: /, '')
     });
   }
 };
