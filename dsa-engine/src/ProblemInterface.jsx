@@ -1,10 +1,15 @@
-import { useState } from 'react'                                                                                                                          
- import Editor from '@monaco-editor/react'                                                                                                                 
+import { useState, useEffect } from 'react'                                                                                                                          
+import Editor from '@monaco-editor/react'                                                                                                                 
                                                                                                                                                            
- const ProblemInterface = ({ problem, onCodeSubmit }) => {                                                                                                
+const ProblemInterface = ({ problem, onCodeSubmit }) => {                                                                                                
   const [code, setCode] = useState(problem.boilerplate)                                                                                                  
   const [testResults, setTestResults] = useState([])                                                                                                     
-  const [isSubmitting, setIsSubmitting] = useState(false)                                                                                                
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    setCode(problem.boilerplate)
+    setTestResults([])
+  }, [problem.boilerplate])                                                                                               
                                                                                                                                                          
   const handleSubmit = async () => {                                                                                                                     
     setIsSubmitting(true)                                                                                                                                

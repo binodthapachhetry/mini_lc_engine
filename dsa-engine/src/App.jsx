@@ -87,7 +87,8 @@ ${code
          ))}                                                                                                                                               
        </div>                                                                                                                                              
                                                                                                                                                            
-       <ProblemInterface                                                                                                                                   
+       <ProblemInterface
+         key={currentProblem}
          problem={problems[currentProblem]}                                                                                                                
          onCodeSubmit={handleCodeSubmit}                                                                                                                   
        />                                                                                                                                                  
