@@ -20,16 +20,16 @@ self.onmessage = async (e) => {
 ${code}
 
 import json
-input_data = json.loads('${JSON.stringify(input)}')
+input_data = json.loads('${JSON.stringify(input)}')                                                                                                       
 
-try:                                                                                                                                                      
-     # Dynamic argument handling                                                                                                                           
-     if isinstance(input_data, list) and ${inputType === 'spread'}:                                                                                        
-         result = solution(*input_data)                                                                                                                    
-     else:                                                                                                                                                 
-         result = solution(input_data)                                                                                                                     
- except Exception as e:                                                                                                                                    
-     result = {'py_error': str(e), 'type': type(e).__name__}
+try:
+  # Dynamic argument handling
+  if isinstance(input_data, list) and ${inputType === 'spread'}:
+    result = solution(*input_data)
+  else:
+    result = solution(input_data)
+except Exception as e:
+  result = {'py_error': str(e), 'type': type(e).__name__}
 `;
 
     await pyodide.runPythonAsync(fullScript);
