@@ -14,30 +14,30 @@ self.onmessage = async (e) => {
   if (!pyodide) await initializePyodide();
   
   try {
-    // Clear previous Python state
-    pyodide.runPython('del solution; del input_data;');
+    // Clear previous state
+    pyodide.runPython('globals().clear()');
     
-    // Convert input to Python objects
-    await pyodide.runPythonAsync(`
-      import json
-      input_data = json.loads('${JSON.stringify(input)}')
-    `);
+    // Define solution function and execute in one context
+    const fullScript = `
+${code}
+
+import json
+input_data = json.loads('${JSON.stringify(input)}')
+
+try:
+    result = solution(*input_data) if ${problemType === 'twoSum'} else solution(input_data)
+except Exception as e:
+    result = {'error': str(e), 'type': type(e).__name__}
+    `;
+
+    await pyodide.runPythonAsync(fullScript);
+    const result = pyodide.globals.get('result');
     
-    // Handle different problem types
-    let result;
-    if (problemType === 'twoSum') {
-      await pyodide.runPythonAsync(code);
-      result = await pyodide.runPythonAsync(`
-        solution(*input_data)
-      `);
-    } else { // validPalindrome
-      await pyodide.runPythonAsync(code);
-      result = await pyodide.runPythonAsync(`
-        solution(input_data)
-      `);
+    // Handle Python errors
+    if ('error' in result) {
+      throw new Error(`Python Error (${result.type}): ${result.error}`);
     }
     
-    // Convert Python results to JS
     self.postMessage({ result: result?.toJs() });
   } catch (error) {
     self.postMessage({ 
