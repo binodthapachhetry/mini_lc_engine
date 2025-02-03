@@ -1,3 +1,4 @@
-.aider*
+.aider/
+.aider*.json
 dsa-engine/node_modules
 
