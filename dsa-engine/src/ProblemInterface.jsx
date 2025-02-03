@@ -29,7 +29,7 @@ import { useState } from 'react'
        <div className="code-editor">                                                                                                                       
          <Editor                                                                                                                                           
            height="400px"                                                                                                                                  
-           defaultLanguage="javascript"                                                                                                                    
+           defaultLanguage="python"                                                                                                                    
            value={code}                                                                                                                                    
            onChange={value => setCode(value)}                                                                                                              
            options={{ minimap: { enabled: false } }}                                                                                                       
