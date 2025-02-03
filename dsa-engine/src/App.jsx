@@ -12,14 +12,8 @@ import { useState } from 'react'
        const testCases = problems[currentProblem].testCases
        const results = []
        
-       // TreeNode class for BST problems
-       class TreeNode {
-         constructor(val = 0, left = null, right = null) {
-           this.val = val
-           this.left = left
-           this.right = right
-         }
-       }
+       // Create Web Worker
+       const worker = new Worker(new URL('./workers/code-executor.js', import.meta.url))
 
        // Convert array input to TreeNode structure for BST problems
        const createTreeNode = (arr) => {
@@ -76,37 +70,36 @@ ${code
 }`
        }
 
-       for (const [i, testCase] of testCases.entries()) {
-         try {
-           // Convert Python code to valid JS
-           const jsCode = currentProblem === 0 
-             ? pythonToJS.twoSum(code)
-             : pythonToJS.validateBST(code)
+       for (const testCase of testCases) {
+         const result = await new Promise((resolve) => {
+           worker.onmessage = (e) => {
+             if (e.data.status === 'error') {
+               resolve({
+                 status: 'error',
+                 message: e.data.error
+               });
+             } else {
+               const output = e.data.result;
+               const passed = JSON.stringify(output) === JSON.stringify(testCase.expected);
+               resolve({
+                 status: passed ? 'passed' : 'failed',
+                 message: passed ? null : `Expected: ${JSON.stringify(testCase.expected)}, Got: ${JSON.stringify(output)}`
+               });
+             }
+           };
 
-           // Prepare input based on problem type
-           const input = currentProblem === 0
-             ? testCase.input
-             : createTreeNode(testCase.input)
+           worker.postMessage({
+             code,
+             input: testCase.input,
+             problemType: problems[currentProblem].type
+           });
+         });
 
-           // Execute solution
-           const userFn = new Function('input', `${jsCode}; return solution(input)`)
-           const output = userFn(input)
-
-           // Validate output
-           const expected = testCase.expected
-           const passed = JSON.stringify(output) === JSON.stringify(expected)
-           
-           results.push({
-             status: passed ? 'passed' : 'failed',
-             message: passed ? null : `Expected: ${JSON.stringify(expected)}, Got: ${JSON.stringify(output)}`
-           })
-         } catch (err) {
-           results.push({ 
-             status: 'error', 
-             message: err.message.replace(/at new Function \(<anonymous>\):[\s\S]*/, '') 
-           })
-         }
+         results.push(result);
        }
+
+       // Terminate worker after tests complete
+       worker.terminate();
        
        return results
      } catch (error) {
