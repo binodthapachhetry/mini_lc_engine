@@ -22,23 +22,25 @@ self.onmessage = async (e) => {
 ${code}
 
 import json
+from js import resolve
 input_data = json.loads('${JSON.stringify(input)}')
 
 try:
     result = solution(*input_data) if ${problemType === 'twoSum'} else solution(input_data)
+    resolve(result)
 except Exception as e:
-    result = {'error': str(e), 'type': type(e).__name__}
-    `;
+    resolve({'error': str(e), 'type': type(e).__name__})
+`;
 
-    await pyodide.runPythonAsync(fullScript);
-    const result = pyodide.globals.get('result');
+    const result = await pyodide.runPythonAsync(fullScript);
     
-    // Handle Python errors
-    if ('error' in result) {
-      throw new Error(`Python Error (${result.type}): ${result.error}`);
-    }
+    // Handle Python boolean conversion
+    let jsResult = result?.toJs ? result.toJs() : result;
     
-    self.postMessage({ result: result?.toJs() });
+    // Convert Python None to JS null
+    if (jsResult === undefined) jsResult = null;
+    
+    self.postMessage({ status: 'success', result: jsResult });
   } catch (error) {
     self.postMessage({ 
       status: 'error', 

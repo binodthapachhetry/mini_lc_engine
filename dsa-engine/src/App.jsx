@@ -45,7 +45,15 @@ ${code
                });
              } else {
                const output = e.data.result;
-               const passed = JSON.stringify(output) === JSON.stringify(testCase.expected);
+               
+               // Handle Python boolean capitalization
+               let passed;
+               if (typeof testCase.expected === 'boolean') {
+                 passed = output === Boolean(testCase.expected);
+               } else {
+                 passed = JSON.stringify(output) === JSON.stringify(testCase.expected);
+               }
+               
                resolve({
                  status: passed ? 'passed' : 'failed',
                  message: passed ? null : `Expected: ${JSON.stringify(testCase.expected)}, Got: ${JSON.stringify(output)}`
