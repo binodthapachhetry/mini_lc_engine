@@ -12,45 +12,99 @@ import { useState } from 'react'
        const testCases = problems[currentProblem].testCases
        const results = []
        
-       // Simple Python-like execution (note: this is JavaScript parsing Python syntax)
+       // TreeNode class for BST problems
+       class TreeNode {
+         constructor(val = 0, left = null, right = null) {
+           this.val = val
+           this.left = left
+           this.right = right
+         }
+       }
+
+       // Convert array input to TreeNode structure for BST problems
+       const createTreeNode = (arr) => {
+         if (arr.length === 0) return null
+         const root = new TreeNode(arr[0])
+         const queue = [root]
+         let i = 1
+         
+         while (queue.length > 0 && i < arr.length) {
+           const node = queue.shift()
+           
+           if (arr[i] !== null) {
+             node.left = new TreeNode(arr[i])
+             queue.push(node.left)
+           }
+           i++
+           
+           if (i < arr.length && arr[i] !== null) {
+             node.right = new TreeNode(arr[i])
+             queue.push(node.right)
+           }
+           i++
+         }
+         return root
+       }
+
+       // Python to JS conversion utilities
+       const pythonToJS = {
+         twoSum: (code) => `
+function solution(input) {
+  const [nums, target] = input;
+  ${code
+    .replace(/def solution\(nums, target\):/, '')
+    .replace(/    /g, '  ')
+    .replace(/#.*/g, '')}
+}`,
+
+         validateBST: (code) => `
+class TreeNode {
+  constructor(val = 0, left = null, right = null) {
+    this.val = val
+    this.left = left
+    this.right = right
+  }
+}
+
+${code
+  .replace(/class TreeNode:/g, '')
+  .replace(/def __init__\(self, val=0, left=None, right=None\):/g, '')
+  .replace(/        self\./g, '  this.')
+  .replace(/def solution\(root\):/, 'function solution(root) {')
+  .replace(/    /g, '  ')
+  .replace(/#.*/g, '')}
+}`
+       }
+
        for (const [i, testCase] of testCases.entries()) {
          try {
-           const pyCode = `
-${code}
+           // Convert Python code to valid JS
+           const jsCode = currentProblem === 0 
+             ? pythonToJS.twoSum(code)
+             : pythonToJS.validateBST(code)
 
-// Convert Python-style code to JS
-${currentProblem === 0 ? `
-function solution(nums, target) {
-${code
-  .replace(/def solution\(nums, target\):/, '')
-  .replace(/    /g, '  ')
-  .replace(/#.*/g, '')}
-}` : `
-${code
-  .replace(/class TreeNode:/g, 'class TreeNode {')
-  .replace(/def __init__\(self, val=0, left=None, right=None\):/g, 'constructor(val=0, left=null, right=null) {')
-  .replace(/        self./g, '    this.')
-  .replace(/def solution\(root\):/g, 'function solution(root) {')
-  .replace(/    /g, '  ')
-  .replace(/#.*/g, '')}
-}`)}
-`
-           const userFn = new Function('input', `${pyCode}; return solution(...input)`)
-           const output = userFn(testCase.input)
-           
-           // Handle Python-style boolean capitalization
-           const expected = typeof testCase.expected === 'boolean' 
-             ? testCase.expected
-             : testCase.expected
+           // Prepare input based on problem type
+           const input = currentProblem === 0
+             ? testCase.input
+             : createTreeNode(testCase.input)
 
+           // Execute solution
+           const userFn = new Function('input', `${jsCode}; return solution(input)`)
+           const output = userFn(input)
+
+           // Validate output
+           const expected = testCase.expected
            const passed = JSON.stringify(output) === JSON.stringify(expected)
            
            results.push({
              status: passed ? 'passed' : 'failed',
-             message: passed ? null : `Expected: ${expected}, Got: ${JSON.stringify(output)}`
+             message: passed ? null : `Expected: ${JSON.stringify(expected)}, Got: ${JSON.stringify(output)}`
            })
          } catch (err) {
-           results.push({ status: 'error', message: err.message })
+           results.push({ 
+             status: 'error', 
+             message: err.message.replace(/at new Function \(<anonymous>\):[\s\S]*/, '') 
+           })
          }
        }
        
